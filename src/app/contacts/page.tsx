@@ -15,7 +15,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -36,9 +35,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Dialog, DialogTrigger } from "@/components/ui/dialog"
+import ContactPopover from "@/components/contactPopover"
+import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs"
+import { v4 as uuidv4 } from 'uuid';
 import type { Database } from "../../../types_db"
 
 export type Contact = Database['public']['Tables']['contacts']['Row'];
+export type Workspace = Database['public']['Tables']['workspaces']['Row'];
 
 export const columns: ColumnDef<Contact>[] = [
   {
@@ -60,38 +64,44 @@ export const columns: ColumnDef<Contact>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "name",
-    header: "Name",
-    cell: ({ row }) => row.getValue("name"),
+  // {
+  //   accessorKey: "email",
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button
+  //         variant="ghost"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //       >
+  //         Email
+  //         <ArrowUpDown className="ml-2 h-4 w-4" />
+  //       </Button>
+  //     )
+  //   },
+  //   cell: ({ row }) => <div className="lowercase">
+  //     <Dialog>
+  //       <DialogTrigger>
+  //         {row.getValue("email")}
+  //       </DialogTrigger>
+  //       <ContactPopover contact={row.original} />
+  //     </Dialog>
+  //   </div>,
+  // },
+  // {
+  //   accessorKey: "name",
+  //   header: "Name",
+  //   cell: ({ row }) => row.getValue("name"),
 
-  },
-  {
-    accessorKey: "created_at",
-    header: "Created at",
-    cell: ({ row }) => row.getValue("created_at"),
+  // },
+  // {
+  //   accessorKey: "created_at",
+  //   header: "Created at",
+  //   cell: ({ row }) => row.getValue("created_at"),
 
-  }, {
-    accessorKey: "data",
-    header: "Data",
-    cell: ({ row }) => row.getValue("data"),
-  },
-  
+  // }, {
+  //   accessorKey: "data",
+  //   header: "Data",
+  //   cell: ({ row }) => row.getValue("data"),
+  // },
   {
     id: "actions",
     enableHiding: false,
@@ -123,18 +133,53 @@ export const columns: ColumnDef<Contact>[] = [
   },
 ]
 
-// function getColumns(data: Contact){
-//   return Object.keys(data).map((key) => {
-//     return {
-//       accessorKey: key,
-//       header: key,
-//       cell: ({ row }) => row.getValue(key),
-//     }
-//   })
-// }
+function getColumns(columns: any) {
+  let contactColumns = columns.map((column: string) => ({
+    accessorKey: column,
+    header: column,
+    cell: ({ row }: {
+      row: any
+    }) => {
+      if (column.toLowerCase().includes('email')) {
+        return (
+          <div className="lowercase">
+            <Dialog>
+              <DialogTrigger>
+                {row.getValue(column)}
+              </DialogTrigger>
+              <ContactPopover contact={row.original} />
+            </Dialog>
+          </div>
+        )
+      }
+      return row.getValue(column)
+    },
+  }))
+  contactColumns.push({
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  })
+  return contactColumns
+}
 
 export default function DataTableDemo() {
-  const [contacts, setContacts] = useState<Contact[]>([])
+  const supabase = createPagesBrowserClient();
+  const [workspace, setWorkspace] = useState<Workspace>()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -142,20 +187,27 @@ export default function DataTableDemo() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [tableData, setTableData] = React.useState<any[]>([])
+  const fileRef = React.useRef<HTMLInputElement>(null)
 
-  async function getContacts() {
-    const res = await fetch('/api/get-contacts');
+  async function getWorkspace() {
+    const res = await fetch('/api/get-workspace');
     const data = await res.json()
-    setContacts(data)
+    setWorkspace(data)
   }
 
   useEffect(() => {
-    getContacts()
+    getWorkspace()
   }, [])
 
+  useEffect(() => {
+    if (!workspace) return
+    setTableData(JSON.parse(JSON.stringify(workspace?.contacts || "[]")))
+  }, [workspace])
+
   const table = useReactTable({
-    data: contacts,
-    columns,
+    data: tableData,
+    columns: getColumns(workspace?.columns ? workspace.columns : []),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -172,17 +224,41 @@ export default function DataTableDemo() {
     },
   })
 
+  async function importContacts(e: React.ChangeEvent<HTMLInputElement>) {
+    const fileId = uuidv4()
+    const file = e.target.files?.[0]
+    if (!file) return
+    const { data, error } = await supabase.storage.from('contacts').upload(fileId, file)
+    await fetch('/api/import-workspace-data', {
+      method: 'POST',
+      body: JSON.stringify({ fileId, workspaceId: workspace?.id })
+    })
+    // setContacts(contacts)
+  }
+
   return (
-    contacts.length > 0 &&
-    <div className="w-full">
+    workspace &&
+    <div className="w-full p-4">
       <div className="flex items-center py-4">
-        <Input
+        {/* <Input
           placeholder="Filter emails..."
           value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("email")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
+        /> */}
+        <Button className="ml-3"
+          onClick={() => fileRef.current?.click()}
+        >
+          {/* <Plus className="h-4 w-4" /> */}
+          Import contacts
+        </Button>
+        <input
+          type="file"
+          ref={fileRef}
+          className="hidden"
+          onChange={importContacts}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -239,7 +315,16 @@ export default function DataTableDemo() {
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id}
+                      className="truncate
+                      max-w-xs
+                      sm:max-w-sm
+                      md:max-w-md
+                      lg:max-w-lg
+                      xl:max-w-xl
+                      2xl:max-w-2xl
+                      "
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

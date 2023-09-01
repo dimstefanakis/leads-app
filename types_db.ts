@@ -36,25 +36,42 @@ export interface Database {
     Tables: {
       contacts: {
         Row: {
+          columns: string[] | null
           created_at: string | null
           data: Json | null
-          email: string | null
           id: string
-          name: string | null
         }
         Insert: {
+          columns?: string[] | null
           created_at?: string | null
           data?: Json | null
-          email?: string | null
           id?: string
-          name?: string | null
         }
         Update: {
+          columns?: string[] | null
           created_at?: string | null
           data?: Json | null
-          email?: string | null
           id?: string
-          name?: string | null
+        }
+      }
+      workspaces: {
+        Row: {
+          columns: string[] | null
+          contacts: Json[] | null
+          created_at: string | null
+          id: string
+        }
+        Insert: {
+          columns?: string[] | null
+          contacts?: Json[] | null
+          created_at?: string | null
+          id?: string
+        }
+        Update: {
+          columns?: string[] | null
+          contacts?: Json[] | null
+          created_at?: string | null
+          id?: string
         }
       }
     }
