@@ -37,7 +37,9 @@ import {
 } from "@/components/ui/table"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import ContactPopover from "@/components/contactPopover"
+import { SetupPopover } from "@/components/setupPopover"
 import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs"
+import { useUser } from "@/lib/useUser"
 import { v4 as uuidv4 } from 'uuid';
 import type { Database } from "../../../types_db"
 
@@ -178,6 +180,7 @@ function getColumns(columns: any) {
 }
 
 export default function DataTableDemo() {
+  const { user, userDetails } = useUser()
   const supabase = createPagesBrowserClient();
   const [workspace, setWorkspace] = useState<Workspace>()
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -248,7 +251,14 @@ export default function DataTableDemo() {
           }
           className="max-w-sm"
         /> */}
+        <SetupPopover />
+        {/* <Button className="ml-3"
+          onClick={() => fileRef.current?.click()}
+        >
+          Setup
+        </Button> */}
         <Button className="ml-3"
+          variant="outline"
           onClick={() => fileRef.current?.click()}
         >
           {/* <Plus className="h-4 w-4" /> */}

@@ -16,12 +16,14 @@ import { Label } from "@/components/ui/label"
 import type { Database } from "../../../types_db";
 import strategies from "@/content/strategies"
 
-function buildMessage(contact: Database['public']['Tables']['contacts']['Row']) {
+type Contact = Database['public']['Tables']['workspaces']['Row']['contacts']
+
+function buildMessage(contact: Contact) {
   return `This is all the info we have about the contact.
 ${JSON.stringify(contact)}`
 }
 
-function ContactPopover({ contact }: { contact: Database['public']['Tables']['contacts']['Row'] }) {
+function ContactPopover({ contact }: { contact: Contact }) {
   const { messages, append, input, handleInputChange, handleSubmit } = useChat({
     initialMessages: [
       {
@@ -41,6 +43,11 @@ function ContactPopover({ contact }: { contact: Database['public']['Tables']['co
       },
       {
         id: '4',
+        role: 'system',
+        content: 'Assume that the user is an software development agency that is looking for new clients and you are helping them to send cold emails to tech companies.',
+      },
+      {
+        id: '5',
         role: 'system',
         content: buildMessage(contact),
       },
@@ -64,7 +71,7 @@ function ContactPopover({ contact }: { contact: Database['public']['Tables']['co
           {messages.filter(m => m.role != 'system').map((m, i) => {
             return (
               <>
-                <div key={m.id} className={`mt-${i == 0 ? '0' : '4'} bg-slate-${m.role == 'user' ? '200' : '100'} p-3 bg-secondary rounded text-sm`}>
+                <div key={m.id} className={`mt-${i == 0 ? '0' : '4'} bg-slate-${m.role == 'user' ? '200' : '100'} p-3 bg-secondary rounded text-sm whitespace-break-spaces`}>
                   {/* {m.role === 'user' ? 'User: ' : 'AI: '} */}
                   {m.role === 'assistant' ? (
                     // <Textarea value={m.content} placeholder="" className="min-h-[150px]" />
