@@ -50,8 +50,8 @@ import WorkspaceSelector from "@/components/workspaceSelector"
 import type { Database } from "../../../types_db"
 import useWorkspaceStore from "@/store/useWorkspaceStore"
 
-export type Contact = Database['public']['Tables']['contacts']['Row'];
-export type Workspace = Database['public']['Tables']['workspaces']['Row'];
+type Contact = Database['public']['Tables']['contacts']['Row'];
+type Workspace = Database['public']['Tables']['workspaces']['Row'];
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   // Rank the item
@@ -80,7 +80,7 @@ const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
   return dir === 0 ? sortingFns.alphanumeric(rowA, rowB, columnId) : dir
 }
 
-export const columns: ColumnDef<Contact>[] = [
+const columns: ColumnDef<Contact>[] = [
   {
     id: "select",
     header: ({ table }) => (
