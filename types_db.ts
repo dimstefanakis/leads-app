@@ -34,6 +34,35 @@ export interface Database {
   }
   public: {
     Tables: {
+      chat_contexts: {
+        Row: {
+          area_of_expertise: string | null
+          cold_email_example: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string | null
+          user_id: string | null
+        }
+        Insert: {
+          area_of_expertise?: string | null
+          cold_email_example?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          area_of_expertise?: string | null
+          cold_email_example?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+          user_id?: string | null
+        }
+      }
       contacts: {
         Row: {
           columns: string[] | null

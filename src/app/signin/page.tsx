@@ -38,7 +38,6 @@ export function SignIn() {
   const [message, setMessage] = useState(null);
   const supabase = createClientComponentClient();
   const { user } = useUser();
-  console.log(user, 'user')
 
   function onSubmit(values: any) {
     if (view == 'sign_in') {
@@ -46,7 +45,6 @@ export function SignIn() {
     } else {
       handleSignUp();
     }
-    console.log(values)
   }
 
   async function handleSignUp() {
@@ -64,9 +62,10 @@ export function SignIn() {
       }
     )
     const data = await response.json()
-    console.log(data)
     if (data.error) {
       form.setError('invalid_credentials', { message: data.error });
+    } else {
+      handleLogin();
     }
   }
 
@@ -149,22 +148,22 @@ export function SignIn() {
                   <div className="w-full text-center">
                     {view === 'sign_in' && (
                       <div
-                        onClick={() => setView('sign_up')}
-                        className="text-md hover:text-indigo-500"
+                        className="text-md"
                       >
                         Dont have an account?
-                        <span style={{ color: '#3182ce' }} className="w-full font-medium ml-1 text-md hover:text-indigo-500">
+                        <span style={{ color: '#3182ce', cursor: 'pointer' }} onClick={() => setView('sign_up')}
+                          className="w-full font-medium ml-1 text-md hover:text-indigo-500">
                           Sign up
                         </span>
                       </div>
                     )}
                     {view === 'sign_up' && (
                       <div
-                        onClick={() => setView('sign_in')}
-                        className="text-md hover:text-indigo-500"
+                        className="text-md"
                       >
                         Already have an account?
-                        <span style={{ color: '#3182ce' }} className="w-full font-medium ml-1 text-md hover:text-indigo-500">
+                        <span style={{ color: '#3182ce', cursor: 'pointer' }} onClick={() => setView('sign_in')}
+                          className="w-full font-medium ml-1 text-md hover:text-indigo-500">
                           Login
                         </span>
                       </div>

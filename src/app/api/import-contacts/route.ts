@@ -13,7 +13,6 @@ export const config = {
 export async function POST(request: Request) {
   // get file id from request
   const { fileId } = await request.json()
-  console.log(fileId, 'fileId');
 
   const supabase = createRouteHandlerClient<Database>({ cookies })
   const contacts = await supabase.storage.from('contacts').download(fileId)
@@ -23,7 +22,6 @@ export async function POST(request: Request) {
   }
 
   const contactData = await contacts.data?.text();
-  console.log(contactData, contacts, 'contactData');
   const contactColumns = contactData?.split('\n')[0].split(',')
   const contactRows = contactData?.split('\n').slice(1)
 
@@ -49,8 +47,6 @@ export async function POST(request: Request) {
       columns: contactColumns,
     })
   }
-
-  console.log('data');
 
   return NextResponse.json(data)
 }

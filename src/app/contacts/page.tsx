@@ -13,7 +13,12 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  FilterFn,
+  FilterFns,
+  sortingFns,
+  SortingFn,
 } from "@tanstack/react-table"
+import { rankItem, compareItems } from '@tanstack/match-sorter-utils'
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -41,10 +46,39 @@ import { SetupPopover } from "@/components/setupPopover"
 import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs"
 import { useUser } from "@/lib/useUser"
 import { v4 as uuidv4 } from 'uuid';
+import WorkspaceSelector from "@/components/workspaceSelector"
 import type { Database } from "../../../types_db"
+import useWorkspaceStore from "@/store/useWorkspaceStore"
 
 export type Contact = Database['public']['Tables']['contacts']['Row'];
 export type Workspace = Database['public']['Tables']['workspaces']['Row'];
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value)
+
+  // Store the itemRank info
+  addMeta(itemRank)
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed
+}
+
+const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
+  let dir = 0
+
+  // Only sort by rank if the column has ranking information
+  if (rowA.columnFiltersMeta[columnId]) {
+    dir = compareItems(
+      // @ts-ignore
+      rowA.columnFiltersMeta[columnId]!,
+      rowB.columnFiltersMeta[columnId]!
+    )
+  }
+
+  // Provide an alphanumeric fallback for when the item ranks are equal
+  return dir === 0 ? sortingFns.alphanumeric(rowA, rowB, columnId) : dir
+}
 
 export const columns: ColumnDef<Contact>[] = [
   {
@@ -142,31 +176,45 @@ function getColumns(columns: any) {
     cell: ({ row }: {
       row: any
     }) => {
-      if (column.toLowerCase().includes('email')) {
-        return (
-          <div className="lowercase">
-            <Dialog>
-              <DialogTrigger>
-                {row.getValue(column)}
-              </DialogTrigger>
-              <ContactPopover contact={row.original} />
-            </Dialog>
-          </div>
-        )
-      }
-      return row.getValue(column)
+      // if (column.toLowerCase().includes('email')) {
+      //   return (
+      //     <div className="lowercase">
+      //       <Dialog>
+      //         <DialogTrigger>
+      //           {row.getValue(column)}
+      //         </DialogTrigger>
+      //         <ContactPopover contact={row.original} />
+      //       </Dialog>
+      //     </div>
+      //   )
+      // }
+      // return row.getValue(column)
+      return (
+        <div className="lowercase">
+          <Dialog>
+            <DialogTrigger>
+              {row.getValue(column)}
+            </DialogTrigger>
+            <ContactPopover contact={row.original} />
+          </Dialog>
+        </div>
+      )
     },
+    ...(column.toLowerCase().includes('email') ? {
+      filterFn: 'fuzzy',
+      sortingFn: fuzzySort,
+    } : {})
   }))
   contactColumns.push({
     id: "select",
-    header: ({ table }) => (
+    header: ({ table }: { table: any }) => (
       <Checkbox
         checked={table.getIsAllPageRowsSelected()}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
-    cell: ({ row }) => (
+    cell: ({ row }: { row: any }) => (
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -179,40 +227,56 @@ function getColumns(columns: any) {
   return contactColumns
 }
 
-export default function DataTableDemo() {
+export default function DataTable() {
   const { user, userDetails } = useUser()
   const supabase = createPagesBrowserClient();
-  const [workspace, setWorkspace] = useState<Workspace>()
+  const { currentWorkspace, workspaces, setCurrentWorkspace, setWorkspaces, fetchWorkspaces } = useWorkspaceStore((state) => state)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+  const [globalFilter, setGlobalFilter] = React.useState('')
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const [tableData, setTableData] = React.useState<any[]>([])
   const fileRef = React.useRef<HTMLInputElement>(null)
+  const columns = getColumns(currentWorkspace?.columns ? currentWorkspace.columns : [])
 
-  async function getWorkspace() {
-    const res = await fetch('/api/get-workspace');
-    const data = await res.json()
-    setWorkspace(data)
+  async function getMyWorkspaces() {
+    // const res = await fetch('/api/get-my-workspaces');
+    // const data = await res.json()
+    // setWorkspaces(data);
+    // if (data.length > 0) {
+    //   setCurrentWorkspace(data[0])
+    // }
+    // get and set initial workspace
+    fetchWorkspaces((workspaces) => {
+      if (workspaces.length > 0) {
+        setCurrentWorkspace(workspaces[0])
+      }
+    })
   }
 
   useEffect(() => {
-    getWorkspace()
+    getMyWorkspaces()
   }, [])
 
   useEffect(() => {
-    if (!workspace) return
-    setTableData(JSON.parse(JSON.stringify(workspace?.contacts || "[]")))
-  }, [workspace])
+    if (!currentWorkspace) return
+    setTableData(JSON.parse(JSON.stringify(currentWorkspace?.contacts || "[]")))
+  }, [currentWorkspace, currentWorkspace?.contacts?.length])
 
   const table = useReactTable({
     data: tableData,
-    columns: getColumns(workspace?.columns ? workspace.columns : []),
+    columns: columns,
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
+    globalFilterFn: fuzzyFilter,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -224,6 +288,7 @@ export default function DataTableDemo() {
       columnFilters,
       columnVisibility,
       rowSelection,
+      globalFilter,
     },
   })
 
@@ -234,13 +299,14 @@ export default function DataTableDemo() {
     const { data, error } = await supabase.storage.from('contacts').upload(fileId, file)
     await fetch('/api/import-workspace-data', {
       method: 'POST',
-      body: JSON.stringify({ fileId, workspaceId: workspace?.id })
+      body: JSON.stringify({ fileId, workspaceId: currentWorkspace?.id })
     })
+    fetchWorkspaces()
     // setContacts(contacts)
   }
 
   return (
-    workspace &&
+    currentWorkspace &&
     <div className="w-full p-4">
       <div className="flex items-center py-4">
         {/* <Input
@@ -251,6 +317,7 @@ export default function DataTableDemo() {
           }
           className="max-w-sm"
         /> */}
+        <WorkspaceSelector />
         <SetupPopover />
         {/* <Button className="ml-3"
           onClick={() => fileRef.current?.click()}
@@ -297,6 +364,15 @@ export default function DataTableDemo() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      <Input
+        placeholder="Filter emails..."
+        value={globalFilter}
+        onChange={(event) =>
+          setGlobalFilter(event.target.value)
+        }
+        className="max-w-sm mb-4"
+      />
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>

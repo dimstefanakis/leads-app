@@ -13,17 +13,27 @@ const supabaseAdmin = createClient<Database>(
 );
 
 export async function POST(request: Request) {
+  const supabase = createRouteHandlerClient<Database>({ cookies })
   const requestUrl = new URL(request.url)
+  requestUrl.pathname = '/contacts'
   const { email, password } = await request.json()
   // const supabase = createRouteHandlerClient<Database>({ cookies })
 
-  await supabaseAdmin.auth.admin.createUser({
+  let response = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
     email_confirm: true
   })
 
-  return NextResponse.redirect(requestUrl.origin, {
-    status: 301,
-  })
+  if (response.error) {
+    return NextResponse.redirect('/auth/sign-up?error=signup')
+  }
+
+  await supabase.from('workspaces').insert({
+    contacts: [],
+    columns: [],
+    user_id: response.data.user.id,
+  }).select('*')
+
+  return NextResponse.json(response.data)
 }

@@ -15,7 +15,7 @@ export async function middleware(req: NextRequest) {
   // if (user && req.nextUrl.pathname === '/') {
   //   return NextResponse.redirect(new URL('/contacts', req.url))
   // }
-  if (user) {
+  if (user && req.nextUrl.pathname != '/contacts') {
     return NextResponse.redirect(new URL('/contacts', req.url))
   }
 
@@ -24,9 +24,16 @@ export async function middleware(req: NextRequest) {
   //   return NextResponse.redirect(new URL('/', req.url))
   // }
 
+  // if user is not signed in and the current path is not / redirect the user to /
+  if (!user && req.nextUrl.pathname == '/contacts') {
+    const redirectUrl = req.nextUrl.clone();
+    redirectUrl.pathname = "/";
+    return NextResponse.redirect(redirectUrl);
+  }
+
   return res
 }
 
 export const config = {
-  matcher: ['/', '/account', '/signin'],
+  matcher: ['/', '/account', '/signin', '/contacts'],
 }

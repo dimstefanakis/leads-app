@@ -18,8 +18,8 @@ export async function POST(request: Request) {
   const supabase = createRouteHandlerClient<Database>({ cookies })
   const contacts = await supabase.storage.from('contacts').download(fileId)
   const workspace = await supabase.from('workspaces').select('*').eq('id', workspaceId).limit(1)
-
-  if (!contacts || !workspace) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!contacts || !workspace || !user) {
     return NextResponse.json({ success: false })
   }
 
@@ -35,25 +35,11 @@ export async function POST(request: Request) {
     }
   });
 
-  // const { data: { user } } = await supabase.auth.getUser()
-
   // check if there are contacts in workspace
-  if(workspace && workspace.data){
-    const {contacts} = workspace.data[0];
-    if(!contacts){
-      const response = await supabase.from('workspaces').insert({
-        contacts: JSON.parse(JSON.stringify(data)),
-        columns: contactColumns,
-      })
-      return NextResponse.json(response)
-    }else{
-      const response = await supabase.from('workspaces').update({
-        contacts: JSON.parse(JSON.stringify(data)),
-        columns: contactColumns,
-      }).eq('id', workspaceId)
-      return NextResponse.json(response)
-    }
-  }
-
-  return NextResponse.json({ success: false })
+  const response = await supabase.from('workspaces').update({
+    contacts: JSON.parse(JSON.stringify(data)),
+    columns: contactColumns,
+  }).eq('id', workspaceId).select('*')
+  return NextResponse.json(response) 
+  // return NextResponse.json({ success: false })
 }

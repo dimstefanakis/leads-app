@@ -13,6 +13,7 @@ import { Textarea } from "../ui/textarea"
 import { Separator } from "../ui/separator"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useUser } from "@/lib/useUser"
 import type { Database } from "../../../types_db";
 import strategies from "@/content/strategies"
 
@@ -24,6 +25,7 @@ ${JSON.stringify(contact)}`
 }
 
 function ContactPopover({ contact }: { contact: Contact }) {
+  const { user, userChatContext } = useUser();
   const { messages, append, input, handleInputChange, handleSubmit } = useChat({
     initialMessages: [
       {
@@ -44,10 +46,30 @@ function ContactPopover({ contact }: { contact: Contact }) {
       {
         id: '4',
         role: 'system',
-        content: 'Assume that the user is an software development agency that is looking for new clients and you are helping them to send cold emails to tech companies.',
+        content: 'Assume that the user is an software development or marketing agency that is looking for new clients and you are helping them to send cold emails to tech companies.',
       },
       {
         id: '5',
+        role: 'system',
+        content: `Additionally we have this information about the user trying to send emails: ${JSON.stringify({
+          name: userChatContext?.name,
+          email: userChatContext?.email,
+          expertise: userChatContext?.area_of_expertise,
+          cold_email_example: userChatContext?.cold_email_example,
+        })}`
+      },
+      {
+        id: '6',
+        role: 'system',
+        content: 'If the user included a cold email example, you can use that as a starting point for your suggestions. Try to keep the suggestion the same length as the example and the same tone. avoiding excessive adjectives and overly descriptive language. Keep it lean and simple.',
+      },
+      {
+        id: '7',
+        role: 'system',
+        content: 'When proposing meeting dates, try to propose dates that are at least 2 days in the future.'
+      },
+      {
+        id: '8',
         role: 'system',
         content: buildMessage(contact),
       },
@@ -58,16 +80,16 @@ function ContactPopover({ contact }: { contact: Contact }) {
   return (
     <DialogContent className="sm:max-w-[725px]">
       <DialogHeader>
-        <DialogTitle>Edit profile</DialogTitle>
+        <DialogTitle>Generate email</DialogTitle>
         <DialogDescription>
-          Make changes to your profile here. Click save when youre done.
+          Make sure to click &quot;setup&quot; before generating emails. This will help Senec generate better emails for you.
         </DialogDescription>
       </DialogHeader>
-      <div className="grid grid-cols-2 gap-4 py-4">
-        <div className="col-1">
+      <div className="grid grid-cols-1 gap-4 py-4">
+        {/* <div className="col-1">
           <Textarea placeholder="" className="min-h-[150px]" />
-        </div>
-        <div className="col-2 max-h-[500px] overflow-y-auto break-words">
+        </div> */}
+        <div className="col-1 max-h-[500px] overflow-y-auto break-words">
           {messages.filter(m => m.role != 'system').map((m, i) => {
             return (
               <>

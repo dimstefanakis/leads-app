@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { useForm } from "react-hook-form"
+import { useUser } from "@/lib/useUser"
 
 // component which setups data needed for the email chatbot
 // will incluse stuff like:
@@ -29,17 +30,43 @@ import { useForm } from "react-hook-form"
 // - Users area of expertise
 // - An example of a cold email they have sent before
 
-export function SetupPopover() {
-  const form = useForm()
+type Inputs = {
+  name: string,
+  email: string,
+  expertise: string,
+  exampleEmail: string,
+}
 
-  function onSubmit(values: any) {
-    console.log(values)
+export function SetupPopover() {
+  const { user, userChatContext } = useUser();
+  const form = useForm<Inputs>({
+    defaultValues: {
+      name: userChatContext?.name || '',
+      email: userChatContext?.email || '',
+      expertise: userChatContext?.area_of_expertise || '',
+      exampleEmail: userChatContext?.cold_email_example || '',
+    }
+  })
+
+  async function onSubmit(values: Inputs) {
+    let response = await fetch('/api/update-chat-context', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: values.name,
+        // email: values.email,
+        expertise: values.expertise,
+        cold_email_example: values.exampleEmail,
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Setup</Button>
+        <Button className="ml-3">Setup</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[725px]">
         <DialogHeader>
@@ -53,7 +80,7 @@ export function SetupPopover() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <FormField
               control={form.control}
-              name="username"
+              name="name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel htmlFor={field.name}>Name</FormLabel>
@@ -68,7 +95,7 @@ export function SetupPopover() {
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
@@ -85,7 +112,7 @@ export function SetupPopover() {
                   </FormControl>
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="expertise"
@@ -109,7 +136,6 @@ export function SetupPopover() {
               name="exampleEmail"
               render={({ field }) => (
                 <FormItem>
-
                   <FormLabel htmlFor={field.name}>Example of a cold email you have sent before</FormLabel>
                   <FormControl>
                     <Textarea
@@ -117,13 +143,14 @@ export function SetupPopover() {
                       id={field.name}
                       placeholder=""
                       autoComplete="off"
+                      rows={12}
                     />
 
                   </FormControl>
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button type="submit">Save</Button>
           </form>
         </Form>
 
