@@ -4,12 +4,6 @@ import { cookies } from 'next/headers'
 
 import { Database } from '../../../../types_db'
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
-
 export async function POST(request: Request) {
   // get file id from request
   const { fileId } = await request.json()

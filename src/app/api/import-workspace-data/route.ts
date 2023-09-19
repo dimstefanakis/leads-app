@@ -5,12 +5,6 @@ import Papa from 'papaparse';
 
 import { Database } from '../../../../types_db'
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
-
 export async function POST(request: Request) {
   // get file id from request
   const { fileId, workspaceId } = await request.json()
