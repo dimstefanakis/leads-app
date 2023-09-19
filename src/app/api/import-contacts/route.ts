@@ -4,6 +4,8 @@ import { cookies } from 'next/headers'
 
 import { Database } from '../../../../types_db'
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   // get file id from request
   const { fileId } = await request.json()

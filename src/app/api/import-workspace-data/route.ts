@@ -5,6 +5,8 @@ import Papa from 'papaparse';
 
 import { Database } from '../../../../types_db'
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: Request) {
   // get file id from request
   const { fileId, workspaceId } = await request.json()

@@ -4,7 +4,6 @@ import { cookies } from 'next/headers'
 
 import { Database } from '../../../../types_db'
 
-
 export const dynamic = 'force-dynamic'
 
 export async function POST() {
