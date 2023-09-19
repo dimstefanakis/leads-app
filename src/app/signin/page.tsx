@@ -29,7 +29,7 @@ const views = [
 type Views = typeof views[number];
 
 
-export function SignIn() {
+function SignIn() {
   const router = useRouter();
   const form = useForm()
   const [view, setView] = useState<Views>('sign_in');
