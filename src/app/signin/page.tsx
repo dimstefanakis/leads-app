@@ -147,7 +147,7 @@ function SignIn() {
               <div className="w-full">
                 <Button type="submit" className="w-full" disabled={loading}>
                   {view === 'sign_in' ? 'Sign in' : 'Sign up'}
-                  {loading && <Loader2 className="w-4 h-4 ml-2" />}
+                  {loading && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
                 </Button>
               </div>
               <div className="mt-4">

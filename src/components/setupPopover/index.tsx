@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,6 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Loader2 } from 'lucide-react';
+import { useToast } from "../ui/use-toast";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -38,6 +43,8 @@ type Inputs = {
 }
 
 export function SetupPopover() {
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
   const { user, userChatContext } = useUser();
   const form = useForm<Inputs>({
     defaultValues: {
@@ -49,6 +56,7 @@ export function SetupPopover() {
   })
 
   async function onSubmit(values: Inputs) {
+    setLoading(true);
     let response = await fetch('/api/update-chat-context', {
       method: 'POST',
       body: JSON.stringify({
@@ -60,6 +68,12 @@ export function SetupPopover() {
       headers: {
         'Content-Type': 'application/json'
       }
+    })
+    setLoading(false);
+    toast({
+      title: 'Saved',
+      description: 'Your chat context has been saved.',
+      duration: 5000,
     })
   }
 
@@ -150,7 +164,9 @@ export function SetupPopover() {
                 </FormItem>
               )}
             />
-            <Button type="submit">Save</Button>
+            <Button type="submit" disabled={loading}>Save
+              {loading && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
+            </Button>
           </form>
         </Form>
 
