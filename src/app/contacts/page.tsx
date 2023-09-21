@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -50,6 +51,7 @@ import { v4 as uuidv4 } from 'uuid';
 import WorkspaceSelector from "@/components/workspaceSelector"
 import type { Database } from "../../../types_db"
 import useWorkspaceStore from "@/store/useWorkspaceStore"
+import useContactPopoverStore from "@/store/useContactPopoverStore"
 
 type Contact = Database['public']['Tables']['contacts']['Row'];
 type Workspace = Database['public']['Tables']['workspaces']['Row'];
@@ -191,13 +193,13 @@ function getColumns(columns: any) {
       // }
       // return row.getValue(column)
       return (
-        <div className="lowercase">
-          <Dialog>
-            <DialogTrigger>
-              {row.getValue(column)}
-            </DialogTrigger>
-            <ContactPopover contact={row.original} />
-          </Dialog>
+        <div>
+          {/* <Dialog> */}
+          {/* <DialogTrigger> */}
+          {row.getValue(column)}
+          {/* </DialogTrigger> */}
+          {/* <ContactPopover contact={row.original} /> */}
+          {/* </Dialog> */}
         </div>
       )
     },
@@ -230,6 +232,7 @@ function getColumns(columns: any) {
 
 export default function DataTable() {
   const { user, userDetails } = useUser()
+  const contactPopover = useContactPopoverStore((state) => state)
   const { toast } = useToast()
   const supabase = createPagesBrowserClient();
   const { currentWorkspace, workspaces, setCurrentWorkspace, setWorkspaces, fetchWorkspaces } = useWorkspaceStore((state) => state)
@@ -385,7 +388,9 @@ export default function DataTable() {
         }
         className="max-w-sm mb-4"
       />
-
+      {/* <Dialog open={contactPopover.open} onOpenChange={contactPopover.setOpen}>
+        <ContactPopover contact={contactPopover.contact} />
+      </Dialog> */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -409,13 +414,20 @@ export default function DataTable() {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}
-                      className="truncate
+                <>
+                  <TableRow
+                    key={row.id}
+                    onClick={() => {
+                      contactPopover.setContactId(row.id)
+                      contactPopover.setContact(row.original)
+                      contactPopover.setOpen(!contactPopover.open)
+                    }}
+                    className="cursor-pointer"
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}
+                        className="truncate
                       max-w-xs
                       sm:max-w-sm
                       md:max-w-md
@@ -423,14 +435,20 @@ export default function DataTable() {
                       xl:max-w-xl
                       2xl:max-w-2xl
                       "
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {contactPopover.contactId == row.id && (
+                    createPortal(<Dialog open={contactPopover.open} onOpenChange={contactPopover.setOpen}>
+                      <ContactPopover contact={contactPopover.contact} />
+                    </Dialog>, document.body)
+                  )}
+                </>
               ))
             ) : (
               <TableRow>

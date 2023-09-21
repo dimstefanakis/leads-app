@@ -78,7 +78,7 @@ function ContactPopover({ contact }: { contact: Contact }) {
 
 
   return (
-    <DialogContent className="sm:max-w-[725px]">
+    <DialogContent className="sm:max-w-[725px]" onClick={(e) => e.stopPropagation()}>
       <DialogHeader>
         <DialogTitle>Generate email</DialogTitle>
         <DialogDescription>
