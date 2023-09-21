@@ -14,7 +14,7 @@ export default function Home() {
       <div className="w-full h-screen flex justify-center">
         <div className="flex flex-col w-full items-center">
           <div className="w-full flex justify-between absolute top-0 left-0 p-4 h-20">
-            <span>SENEC</span>
+            <span>KAMEMAIL</span>
             <Button size="sm"
               onClick={() => {
                 router.push('/signin')
