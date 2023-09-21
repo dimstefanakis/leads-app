@@ -4,6 +4,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/toaster"
 // import { MyUserContextProvider } from '@/lib/useUser'
 import AuthProvider from '@/lib/useUser';
 
@@ -28,6 +29,7 @@ export default async function RootLayout({
         <AuthProvider session={session}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             {children}
+            <Toaster />
           </ThemeProvider>
         </AuthProvider>
       </body>

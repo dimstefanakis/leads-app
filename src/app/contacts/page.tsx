@@ -45,6 +45,7 @@ import ContactPopover from "@/components/contactPopover"
 import { SetupPopover } from "@/components/setupPopover"
 import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs"
 import { useUser } from "@/lib/useUser"
+import { useToast } from "@/components/ui/use-toast"
 import { v4 as uuidv4 } from 'uuid';
 import WorkspaceSelector from "@/components/workspaceSelector"
 import type { Database } from "../../../types_db"
@@ -229,6 +230,7 @@ function getColumns(columns: any) {
 
 export default function DataTable() {
   const { user, userDetails } = useUser()
+  const { toast } = useToast()
   const supabase = createPagesBrowserClient();
   const { currentWorkspace, workspaces, setCurrentWorkspace, setWorkspaces, fetchWorkspaces } = useWorkspaceStore((state) => state)
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -296,10 +298,20 @@ export default function DataTable() {
     const fileId = uuidv4()
     const file = e.target.files?.[0]
     if (!file) return
+    toast({
+      title: 'Importing contacts',
+      description: 'Please wait...',
+      duration: 10000,
+    })
+
     const { data, error } = await supabase.storage.from('contacts').upload(fileId, file)
     await fetch('/api/import-workspace-data', {
       method: 'POST',
       body: JSON.stringify({ fileId, workspaceId: currentWorkspace?.id })
+    })
+    toast({
+      title: 'Contacts imported',
+      duration: 10000,
     })
     fetchWorkspaces()
     // setContacts(contacts)
@@ -336,6 +348,7 @@ export default function DataTable() {
           ref={fileRef}
           className="hidden"
           onChange={importContacts}
+          accept=".csv"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

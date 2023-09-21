@@ -11,6 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { Loader2 } from 'lucide-react';
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -48,6 +49,7 @@ function SignIn() {
   }
 
   async function handleSignUp() {
+    setLoading(true);
     const response = await fetch(
       '/auth/sign-up',
       {
@@ -64,17 +66,21 @@ function SignIn() {
     const data = await response.json()
     if (data.error) {
       form.setError('invalid_credentials', { message: data.error });
+      setLoading(false);
     } else {
       handleLogin();
+      setLoading(false);
     }
   }
 
   async function handleLogin() {
+    setLoading(true);
     const { error, data } = await supabase.auth.signInWithPassword({
       email: form.watch('email'),
       password: form.watch('password')
     });
     router.refresh()
+    setLoading(false);
 
     if (error) {
       form.setError('invalid_credentials', { message: error.message });
@@ -141,6 +147,7 @@ function SignIn() {
               <div className="w-full">
                 <Button type="submit" className="w-full" disabled={loading}>
                   {view === 'sign_in' ? 'Sign in' : 'Sign up'}
+                  {loading && <Loader2 className="w-4 h-4 ml-2" />}
                 </Button>
               </div>
               <div className="mt-4">
