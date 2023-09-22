@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useState, useEffect } from "react"
-import { createPortal } from "react-dom"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -444,9 +443,9 @@ export default function DataTable() {
                     ))}
                   </TableRow>
                   {contactPopover.contactId == row.id && (
-                    createPortal(<Dialog open={contactPopover.open} onOpenChange={contactPopover.setOpen}>
+                    <Dialog open={contactPopover.open} onOpenChange={contactPopover.setOpen}>
                       <ContactPopover contact={contactPopover.contact} />
-                    </Dialog>, document.body)
+                    </Dialog>
                   )}
                 </>
               ))
