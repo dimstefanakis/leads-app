@@ -20,6 +20,7 @@ import {
 } from "@tanstack/react-table"
 import { rankItem, compareItems } from '@tanstack/match-sorter-utils'
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { Loader2 } from 'lucide-react';
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -40,6 +41,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  PopoverPortal,
+  PopoverAnchor
+} from "@/components/ui/popover"
 import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import ContactPopover from "@/components/contactPopover"
 import { SetupPopover } from "@/components/setupPopover"
@@ -245,22 +259,20 @@ export default function DataTable() {
   const [rowSelection, setRowSelection] = React.useState({})
   const [tableData, setTableData] = React.useState<any[]>([])
   const fileRef = React.useRef<HTMLInputElement>(null)
-  const columns = getColumns(currentWorkspace?.columns ? currentWorkspace.columns : [])
+  const [columns, setColumns] = useState(getColumns(currentWorkspace?.columns ? currentWorkspace.columns : []))
 
   async function getMyWorkspaces() {
-    // const res = await fetch('/api/get-my-workspaces');
-    // const data = await res.json()
-    // setWorkspaces(data);
-    // if (data.length > 0) {
-    //   setCurrentWorkspace(data[0])
-    // }
-    // get and set initial workspace
     fetchWorkspaces((workspaces) => {
       if (workspaces.length > 0) {
         setCurrentWorkspace(workspaces[0])
       }
     })
   }
+
+  useEffect(() => {
+    if (!currentWorkspace) return
+    setColumns(getColumns(currentWorkspace?.columns || []))
+  }, [currentWorkspace?.columns])
 
   useEffect(() => {
     getMyWorkspaces()
@@ -295,6 +307,18 @@ export default function DataTable() {
       globalFilter,
     },
   })
+
+  async function changeFieldName(oldName: string, newName: string) {
+    const oldColumns = currentWorkspace?.columns || []
+    const newColumns = oldColumns.map((column: string) => {
+      if (column == oldName) {
+        return newName
+      }
+      return column
+    })
+
+    setColumns(getColumns(newColumns))
+  }
 
   async function importContacts(e: React.ChangeEvent<HTMLInputElement>) {
     const fileId = uuidv4()
@@ -397,14 +421,7 @@ export default function DataTable() {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </TableHead>
+                    <HeaderItem header={header} onChangeField={changeFieldName} key={header.id} />
                   )
                 })}
               </TableRow>
@@ -433,8 +450,7 @@ export default function DataTable() {
                       lg:max-w-lg
                       xl:max-w-xl
                       2xl:max-w-2xl
-                      "
-                      >
+                      ">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -487,5 +503,104 @@ export default function DataTable() {
         </div>
       </div>
     </div>
+  )
+}
+
+function HeaderItem({ header, onChangeField }: { header: any; onChangeField: (oldValue: string, newValue: string) => void }) {
+  const container = React.useRef<HTMLTableCellElement>(null)
+  const [loading, setLoading] = useState(false)
+  const [editFieldOpen, setEditFieldOpen] = useState(false)
+  const [newFieldName, setNewFieldName] = useState('')
+  const { currentWorkspace, setCurrentWorkspace, fetchWorkspaces } = useWorkspaceStore((state) => state)
+
+  async function getMyWorkspaces() {
+    fetchWorkspaces((workspaces) => {
+      if (workspaces.length > 0) {
+        setCurrentWorkspace(workspaces[0])
+      }
+    })
+  }
+
+  async function updateColumnName(oldName: string, newName: string) {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/change-column-name', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          workspaceId: useWorkspaceStore.getState().currentWorkspace?.id,
+          oldColName: oldName,
+          newColName: newName
+        })
+      })
+      const data = await res.json()
+      await getMyWorkspaces()
+      setLoading(false)
+      setEditFieldOpen(false)
+    } catch (e) {
+      setLoading(false)
+      setEditFieldOpen(false)
+      console.log('error updating column name', e)
+    }
+  }
+  return (
+    <>
+      <ContextMenu>
+        <Popover open={editFieldOpen}>
+          <PopoverPortal>
+            <PopoverContent onPointerDownOutside={() => setEditFieldOpen(false)}>
+              <Input
+                defaultValue={header.column.columnDef.header}
+                onChange={(e) => {
+                  setNewFieldName(e.target.value)
+                }}
+              >
+              </Input>
+              <span
+                className="text-xs text-muted-foreground"
+                style={{ display: 'block', marginTop: '0.5rem' }}
+              >
+                This value will be used to match the column with the data in your CSV file.
+                It also helps KAMEMAIL provide you with better suggestions when you're writing emails.
+              </span>
+              <Button
+                className="mt-2"
+                onClick={() => {
+                  // onChangeField(header.column.columnDef.header, newFieldName)
+                  updateColumnName(header.column.columnDef.header, newFieldName)
+                  setEditFieldOpen(false)
+                }}
+              >
+                Save
+                {loading && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
+              </Button>
+            </PopoverContent>
+          </PopoverPortal>
+          <ContextMenuTrigger asChild>
+            <TableHead key={header.id} ref={container}>
+              <>
+                {header.isPlaceholder
+                  ? null
+                  : flexRender(
+                    <>{header.column.columnDef.header}
+                      <PopoverAnchor />
+                    </>,
+                    header.getContext()
+                  )}
+
+              </>
+            </TableHead>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem onClick={(e) => {
+              console.log('edit field name', container.current)
+              setEditFieldOpen(true)
+            }}>
+              Edit field name
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </Popover>
+
+      </ContextMenu>
+    </>
   )
 }
