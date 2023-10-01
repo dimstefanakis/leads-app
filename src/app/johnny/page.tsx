@@ -19,10 +19,11 @@ const initalMessages: { id: string; role: "function" | "system" | "user" | "assi
           1. Be concise
           2. Create the email by slightly extending the bullet points provided and sewing them together so there is flow in the email
           3. Speak in a modern tone
-          4. If a reply is included, match the replies tone
+          4. If a "Replying to" value is included, match the reply tone
           5. Avoid using too many words like furthermore
           6. Be objective, but not neutral.
           7. Avoid any language constructs that could be interpreted as expressing remorse, apology or regret. This includes any phrases containing words like “sorry”, “apologies”, “regret” etc.
+          8. Avoid excessive details and explanations. Keep it short and to the point.
         `
   },
 ]
