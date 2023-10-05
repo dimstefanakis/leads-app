@@ -12,22 +12,22 @@ function buildInitialMessages(exampleTweet1: string, exampleTweet2: string, exam
     {
       id: '1',
       role: 'system',
-      content: 'You are an expert at creating tweets',
+      content: 'You are an expert at creating short text content',
     },
     {
       id: '2',
       role: 'system',
       content: `
-          1. Create a tweet by using the information you get from the user
+          1. Create a social media agnostic short post by using the information you get from the user
           2. Speak in a modern tone
-          3. Response must be up to 280 characters (twitter limit)
+          3. Response must be up to 260 characters
           4. Avoid using too many words like furthermore
           5. Be objective, but not neutral.
           6. Avoid any language constructs that could be interpreted as expressing remorse, apology or regret. This includes any phrases containing words like “sorry”, “apologies”, “regret” etc.
           7. Avoid excessive details and explanations. Keep it short and to the point.
-          8. Don't use hashtags, for example #tag
+          8. DONT use hashtags, for example #tag. DONT use emojis.
           9. Use new lines to separate sentences
-          10. Match the tone of the example tweets (if provided): ${exampleTweet1}, ${exampleTweet2}, ${exampleTweet3}
+          10. Match the tone of the example posts (if provided): ${exampleTweet1}, ${exampleTweet2}, ${exampleTweet3}
           `
     },
   ]
@@ -51,7 +51,7 @@ function Tweet() {
     append({
       id: (messages.length + 1).toString(),
       role: 'system',
-      content: `Tweet about: ${tweetingAbout}`
+      content: `Post about: ${tweetingAbout}`
     })
   }
 
