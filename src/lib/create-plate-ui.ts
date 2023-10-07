@@ -62,7 +62,7 @@ import { HrElement } from '@/components/plate-ui/hr-element';
 import { ImageElement } from '@/components/plate-ui/image-element';
 import { KbdLeaf } from '@/components/plate-ui/kbd-leaf';
 import { LinkElement } from '@/components/plate-ui/link-element';
-// import { ListElement } from '@/components/plate-ui/list-element';
+import { ListElement } from '@/components/plate-ui/list-element';
 import { MediaEmbedElement } from '@/components/plate-ui/media-embed-element';
 import { MentionElement } from '@/components/plate-ui/mention-element';
 import { MentionInputElement } from '@/components/plate-ui/mention-input-element';
@@ -100,8 +100,8 @@ export const createPlateUI = (
     [ELEMENT_IMAGE]: ImageElement,
     [ELEMENT_LI]: withProps(PlateElement, { as: 'li' }),
     [ELEMENT_LINK]: LinkElement,
-    // [ELEMENT_UL]: withProps(ListElement, { variant: 'ul' }),
-    // [ELEMENT_OL]: withProps(ListElement, { variant: 'ol' }),
+    [ELEMENT_UL]: withProps(ListElement, { variant: 'ul' }),
+    [ELEMENT_OL]: withProps(ListElement, { variant: 'ol' }),
     [ELEMENT_PARAGRAPH]: ParagraphElement,
     [ELEMENT_TABLE]: TableElement,
     [ELEMENT_TD]: TableCellElement,
