@@ -27,7 +27,12 @@ export default function Home() {
           </div>
 
           <div className="max-w-screen-xl text-center mt-36 sm:mt-48">
-            <Badge variant="secondary" className="rounded-lg mb-6 cursor-pointer">
+            <Badge variant="secondary" className="rounded-lg mb-6 cursor-pointer"
+              onClick={() => {
+                // mail
+                window.open('mailto:jim@senec.ai?subject=Senec AI Application&body=Hi Jim, I would like to apply for a personal AI tool.')
+              }}
+            >
               Need a personal AI tool? Apply here <ArrowRightIcon className="ml-1" size={16} />
             </Badge>
             <h1 className="leading-tight sm:leading-none font-extrabold text-7xl tracking-tighter">
@@ -43,7 +48,7 @@ export default function Home() {
                 <CardHeader>
                   <CardTitle className="flex">
                     <TwitterIcon className="mr-2" />
-                    Blog Generator
+                    Tweet Generator
                   </CardTitle>
                   <CardDescription>
                     Create natural sounding tweets that match your tone.
@@ -57,7 +62,9 @@ export default function Home() {
                   </ol>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full">
+                  <Button className="w-full" onClick={() => {
+                    router.push('/tweet')
+                  }}>
                     Try it out
                   </Button>
                 </CardFooter>
@@ -80,7 +87,9 @@ export default function Home() {
                   </ol>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full">
+                  <Button className="w-full" onClick={() => {
+                    router.push('/email')
+                  }}>
                     Try it out
                   </Button>
                 </CardFooter>
@@ -104,7 +113,9 @@ export default function Home() {
                   </ol>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full">
+                  <Button className="w-full" onClick={() => {
+                    router.push('/contacts')
+                  }}>
                     Try it out
                   </Button>
                 </CardFooter>
@@ -126,7 +137,9 @@ export default function Home() {
                   </ol>
                 </CardContent>
                 <CardFooter>
-                  <Button className="w-full">
+                  <Button className="w-full" onClick={() => {
+                    router.push('/blog')
+                  }}>
                     Try it out
                   </Button>
                 </CardFooter>
@@ -140,7 +153,6 @@ export default function Home() {
               Pricing
             </h1>
             <Pricing />
-
           </div>
 
           {/* <div className="flex w-full justify-center">

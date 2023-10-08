@@ -1011,6 +1011,11 @@
   resolved "https://registry.npmjs.org/@rushstack/eslint-patch/-/eslint-patch-1.3.3.tgz"
   integrity sha512-0xd7qez0AQ+MbHatZTlI1gu5vkG8r7MYRUJAHPAHJBmGLs16zpkrpAVLvjQKQOqaXPDUBwOiJzNc00znHSCVBw==
 
+"@stripe/stripe-js@^2.1.7":
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/@stripe/stripe-js/-/stripe-js-2.1.7.tgz#9ce9be34ba7f778c626710d6a12171e364a927ba"
+  integrity sha512-oI620ARpFp5jCXfwIYMxyBJmtTFuAjSA8x3k3JgW1M6cvLmw9XgmNcGNegQWmirpozhFNflxrZEgp10og+6MSA==
+
 "@supabase/auth-helpers-nextjs@^0.7.4":
   version "0.7.4"
   resolved "https://registry.yarnpkg.com/@supabase/auth-helpers-nextjs/-/auth-helpers-nextjs-0.7.4.tgz#0e2949b1f7ada97f8593ef1bb57901622c47b065"
@@ -5483,10 +5488,10 @@ strip-json-comments@^3.1.1:
   resolved "https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-3.1.1.tgz"
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
 
-stripe@^13.4.0:
-  version "13.4.0"
-  resolved "https://registry.yarnpkg.com/stripe/-/stripe-13.4.0.tgz#5ac9cb412c70eb647ebebd7da3b849f2a098a980"
-  integrity sha512-UxvRzu46AJALIueMH3/jn++qJlOoM5s+uoHXagr36xTFOj7Knrh28WFiI73dMDkngBElK68cG3WI+LgRulHw6g==
+stripe@^13.9.0:
+  version "13.9.0"
+  resolved "https://registry.yarnpkg.com/stripe/-/stripe-13.9.0.tgz#6d2e6a46791af68318fcbffc01175cb403bc5b35"
+  integrity sha512-sQAqodCvaw/iYWauHHdOWlFGj0oZj/3A51zs4rG5PN3SUJUFSSjtnbc9q5Djpls0iz3nXz2UwjzAdKHVP4dVqQ==
   dependencies:
     "@types/node" ">=8.1.0"
     qs "^6.11.0"
