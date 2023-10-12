@@ -9,7 +9,7 @@ import { Database } from '../../../../types_db';
 export async function POST(req: any) {
   const supabase = createRouteHandlerClient<Database>({ cookies })
 
-  const { price, quantity = 1, metadata = {} } = req.body;
+  const { price, quantity = 1, metadata = {} } = await req.json();
 
   try {
     const { data: { user } } = await supabase.auth.getUser()
@@ -46,5 +46,4 @@ export async function POST(req: any) {
     console.log(err);
     return NextResponse.json(new Error('Could not create subscription'));
   }
-
 };

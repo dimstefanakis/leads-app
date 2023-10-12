@@ -160,7 +160,7 @@ function Tweet() {
               })}
               <form onSubmit={handleSubmit} className="mt-4">
                 <label>
-                  Ask KAME
+                  Ask SENEC
                 </label>
                 <Input
                   placeholder="Chat with AI here..."

@@ -1,7 +1,65 @@
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { CheckIcon } from "lucide-react"
+import { getStripe } from "@/utils/stripe-client";
+import { getActiveProductsWithPrices } from '@/utils/supabase-client';
+import { ProductWithPrice } from "../../../types";
+import { useUser } from "@/lib/useUser";
 
 function Pricing() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState<ProductWithPrice[]>([]);
+  const { user } = useUser();
+
+  useEffect(() => {
+    async function getProducts() {
+      const data = await getActiveProductsWithPrices();
+      setProducts(data);
+    }
+    getProducts();
+  }, []);
+
+  const premiumPlan = products.find(
+    (product) =>
+      // product?.metadata?.live == 'true' &&
+      product?.metadata?.type == 'premium'
+  );
+
+  const premiumPrice = premiumPlan?.prices?.find(
+    (price) => price.id === premiumPlan.default_price
+  );
+
+  async function onClick() {
+    if (!user) {
+      router.push('/signin');
+      return;
+    }
+    console.log('premiumPrice', products, premiumPlan, premiumPrice);
+    if (premiumPrice) {
+      setLoading(true);
+      const response = await fetch(
+        '/api/create-subscription-checkout-session',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(
+            { price: { id: premiumPrice.id } }
+          )
+        }
+      );
+      console.log('response', response);
+      const { sessionId } = await response.json();
+      const stripe = await getStripe();
+      setLoading(false);
+      stripe?.redirectToCheckout({ sessionId });
+    }
+  }
+
   return (
     <div className="grid w-full items-start gap-10 rounded-lg border p-10 md:grid-cols-[1fr_200px]">
       <div className="grid gap-6">
@@ -33,8 +91,9 @@ function Pricing() {
             Billed Monthly
           </p>
         </div>
-        <Button>
+        <Button onClick={onClick} disabled={loading}>
           Get Started
+          {loading && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
         </Button>
       </div>
     </div>

@@ -105,31 +105,6 @@ const copyBillingDetailsToCustomer = async (
   if (error) throw error;
 };
 
-const enableUnlimitedQuestionsStatus = async (customerId: string) => {
-  // get user
-  const { data: customerData, error: noCustomerError } = await supabaseAdmin
-    .from('customers')
-    .select('id')
-    .eq('stripe_customer_id', customerId)
-    .single();
-  if (noCustomerError) throw noCustomerError;
-  const { id: uuid } = customerData!;
-  // get user
-  const { data: userData, error: noUserError } = await supabaseAdmin
-    .from('users')
-    .select('id')
-    .eq('id', uuid)
-    .single();
-  if (noUserError) throw noUserError;
-
-  const { id: userId } = userData!;
-  // update user
-  const { error: updateError } = await supabaseAdmin
-    .from('users')
-    .update({ has_unlimited_questions_plan: true })
-    .eq('id', userId);
-  if (updateError) throw updateError;
-};
 const manageSubscriptionStatusChange = async (
   subscriptionId: string,
   customerId: string,
@@ -262,87 +237,6 @@ const retrieveAdminData = async () => {
   return users;
 };
 
-const createSurveyRecord = async (
-  survey: any,
-  external_link: string | null | undefined,
-  utm_survey: string | null | undefined,
-  user: Database['public']['Tables']['users']['Row']
-) => {
-  // TODO: validate utm_survey is a valid survey id
-  const user_id = user.id;
-  const surveyData: Database['public']['Tables']['surveys']['Insert'] = {
-    id: uuidv4(),
-    user: user_id,
-    data: survey,
-    external_link: external_link,
-    name: survey.surveyName,
-    utm_survey: utm_survey,
-    responses_needed: survey.responsesNeeded,
-    status: 'In Review'
-  };
-  const { data, error } = await supabaseAdmin
-    .from('surveys')
-    .insert([surveyData])
-    .select();
-  if (error) throw error;
-  console.log(`Survey inserted for user [${user_id}].`);
-  return data;
-};
-
-const editSurveyRecord = async (
-  survey: any,
-  surveyId: string,
-  user: Database['public']['Tables']['users']['Row']
-) => {
-  const user_id = user.id;
-  const surveyData: Database['public']['Tables']['surveys']['Update'] = {
-    data: survey,
-    name: survey.surveyName,
-    responses_needed: survey.responsesNeeded,
-    status: 'In Review'
-  };
-  const { data, error } = await supabaseAdmin
-    .from('surveys')
-    .update(surveyData)
-    .eq('id', surveyId)
-    .select()
-    .single();
-  if (error) throw error;
-  console.log(`Survey updated for user [${user_id}].`);
-  return data;
-};
-
-const deleteSurveyRecord = async (surveyId: string) => {
-  const { data, error } = await supabaseAdmin
-    .from('surveys')
-    .delete()
-    .eq('id', surveyId)
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
-};
-
-const duplicateSurveyRecord = async (surveyId: string, profileId: string) => {
-  const { data: surveyData, error: surveyError } = await supabaseAdmin
-    .from('surveys')
-    .select('*')
-    .eq('id', surveyId)
-    .single();
-  if (surveyError) throw surveyError;
-  const survey = surveyData!;
-  const surveyCopy = { ...survey, id: uuidv4() };
-  surveyCopy.created_at = new Date().toISOString();
-  const { data, error } = await supabaseAdmin
-    .from('surveys')
-    .insert([surveyCopy])
-    .select()
-    .single();
-  if (error) throw error;
-  console.log(`Survey copied for user [${profileId}].`);
-  return data;
-};
-
 const getUserProfile = async (user_id: string) => {
   const { data, error } = await supabaseAdmin
     .from('users')
@@ -353,112 +247,6 @@ const getUserProfile = async (user_id: string) => {
   return data;
 };
 
-const retrieveAudiences = async () => {
-  const { data, error } = await supabaseAdmin.from('audiences').select('*');
-  if (error) throw error;
-  return data;
-};
-
-const retrieveMySurveys = async (user_id: string) => {
-  const { data, error } = await supabaseAdmin
-    .from('surveys')
-    .select('*, submissions(count)')
-    .eq('user', user_id);
-  if (error) throw error;
-  return data;
-};
-
-const retrieveAllSurveys = async () => {
-  const { data, error } = await supabaseAdmin
-    .from('surveys')
-    .select('*, submissions(count)')
-    .order('created_at', { ascending: false });
-  if (error) throw error;
-  return data;
-};
-
-const retrieveSurvey = async (survey_id: string) => {
-  const { data, error } = await supabaseAdmin
-    .from('surveys')
-    .select('*, submissions(count)')
-    .eq('id', survey_id)
-    .single();
-  if (error) throw error;
-  return data;
-};
-
-const createUseCaseRecord = async (id: string, use_case: string) => {
-  const { data, error } = await supabaseAdmin
-    .from('use_cases')
-    .upsert([{ use_case: use_case, id: id }]);
-  if (error) throw error;
-  return data;
-};
-
-const tieUserToUseCase = async (user_id: string, use_case: string) => {
-  const { data, error } = await supabaseAdmin
-    .from('users')
-    .update({ use_case })
-    .eq('id', user_id);
-  if (error) throw error;
-  return data;
-};
-
-const createSurveyPromptRecord = async (prompt: string) => {
-  const { data, error } = await supabaseAdmin
-    .from('survey_prompts')
-    .insert([{ prompt: prompt }]);
-  if (error) throw error;
-  return data;
-};
-
-const createSubmission = async (
-  payload: Database['public']['Tables']['submissions']['Insert']
-) => {
-  const { error } = await supabaseAdmin.from('submissions').insert([payload]);
-
-  if (error) {
-    console.log(error.message);
-  }
-};
-
-const createEmailCaptureRecord = async (
-  payload: Database['public']['Tables']['create_form_email_captures']['Insert']
-) => {
-  const { error } = await supabaseAdmin
-    .from('create_form_email_captures')
-    .insert([payload]);
-
-  if (error) {
-    console.log(error.message);
-  }
-};
-
-const retrieveResponsesCount = async (survey_id: string) => {
-  const { data, error } = await supabaseAdmin
-    .from('surveys')
-    .select(`submissions(count)`)
-    .eq('id', survey_id)
-    .single();
-  if (error) throw error;
-  return data;
-};
-
-const retrieveResponses = async (survey_id: string) => {
-  const { data, error } = await supabaseAdmin
-    .from('submissions')
-    .select('data, created_at')
-    .eq('survey', survey_id);
-
-  const survey = await supabaseAdmin
-    .from('surveys')
-    .select('data, name')
-    .eq('id', survey_id)
-    .single();
-  if (error) throw error;
-  return { submissions: data, survey };
-};
-
 export {
   upsertProductRecord,
   cancelSubscription,
@@ -466,23 +254,7 @@ export {
   upsertPriceRecord,
   createOrRetrieveCustomer,
   manageSubscriptionStatusChange,
-  createSurveyRecord,
-  duplicateSurveyRecord,
-  editSurveyRecord,
-  deleteSurveyRecord,
   getUserProfile,
-  retrieveAudiences,
-  retrieveMySurveys,
-  createUseCaseRecord,
-  tieUserToUseCase,
-  createSurveyPromptRecord,
-  retrieveSurvey,
-  createSubmission,
-  retrieveResponsesCount,
-  retrieveResponses,
   retrieveUsersSurveysAndSubmissionCount,
-  retrieveAllSurveys,
   retrieveAdminData,
-  createEmailCaptureRecord,
-  enableUnlimitedQuestionsStatus
 };

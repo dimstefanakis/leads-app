@@ -1,29 +1,42 @@
 'use client';
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation';
-import { ArrowRightIcon, TwitterIcon, MailIcon, MailsIcon, TextIcon } from 'lucide-react';
+import { ArrowRightIcon, TwitterIcon, MailIcon, MailsIcon, TextIcon, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardTitle, CardFooter, CardDescription, CardHeader } from '@/components/ui/card';
 import { NavBar } from '@/components/navbar'
 import Pricing from '@/components/pricing';
 import { Inter } from 'next/font/google'
+import { useUser } from '@/lib/useUser';
 
 const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 export default function Home() {
   const router = useRouter();
+  const { user } = useUser();
+
   return (
     <main>
       <div className="w-full flex justify-center">
         <div className="flex flex-col w-full items-center">
           <div className="w-full flex justify-between absolute top-0 left-0 p-4 h-20">
-            <span>SENEC</span>
+            <Button variant="ghost"
+              onClick={() => {
+                router.push('/')
+              }}
+            >SENEC</Button>
             <Button size="sm"
               onClick={() => {
-                router.push('/signin')
+                if (user) {
+                  router.push('/dashboard')
+                } else {
+                  router.push('/signin')
+                }
               }}
-            >Login</Button>
+            >
+              {user ? 'Dashboard' : 'Sign in'}
+            </Button>
           </div>
 
           <div className="max-w-screen-xl text-center mt-36 sm:mt-48">
@@ -48,7 +61,7 @@ export default function Home() {
                 <CardHeader>
                   <CardTitle className="flex">
                     <TwitterIcon className="mr-2" />
-                    Tweet Generator
+                    Tweet
                   </CardTitle>
                   <CardDescription>
                     Create natural sounding tweets that match your tone.
@@ -73,7 +86,7 @@ export default function Home() {
                 <CardHeader>
                   <CardTitle className="flex">
                     <MailIcon className="mr-2" />
-                    Email Generator
+                    Reply to Email
                   </CardTitle>
                   <CardDescription>
                     Create a reply for your next email.
@@ -98,7 +111,7 @@ export default function Home() {
                 <CardHeader>
                   <CardTitle className="flex">
                     <MailsIcon className="mr-2" />
-                    Cold Email Generator
+                    Cold Email
                   </CardTitle>
                   <CardDescription>
                     Import your contacts and generate cold emails for your tech / marketing agency.
@@ -124,7 +137,7 @@ export default function Home() {
                 <CardHeader>
                   <CardTitle className="flex">
                     <TextIcon className="mr-2" />
-                    Blog Generator
+                    Blog
                   </CardTitle>
                   <CardDescription>
                     Create a blog post for your next blog post.
@@ -139,6 +152,30 @@ export default function Home() {
                 <CardFooter>
                   <Button className="w-full" onClick={() => {
                     router.push('/blog')
+                  }}>
+                    Try it out
+                  </Button>
+                </CardFooter>
+              </Card>
+              <Card className="w-[380px]">
+                <CardHeader>
+                  <CardTitle className="flex">
+                    <DollarSign className="mr-2" />
+                    Lean Model Canvas
+                  </CardTitle>
+                  <CardDescription>
+                    Create a lean model canvas for your next startup.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="grid gap-4">
+                  <ol className="list-disc ml-2">
+                    <li>Write a bit about your business idea</li>
+                    <li>Click generate</li>
+                  </ol>
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full" onClick={() => {
+                    router.push('/canvas')
                   }}>
                     Try it out
                   </Button>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from "react";
+import { Loader2 } from 'lucide-react';
 import remark from 'remark';
 import remarkToSlate from 'remark-slate';
 import { Input } from "@/components/ui/input";
@@ -94,7 +95,6 @@ function RichTextBlogGenerator() {
   const [finishedLoadingMessages, setFinishedLoadingMessages] = useState<any[]>([]);
 
   useEffect(() => {
-    console.log('messages', messages);
     setKey(key + 1);
   }, [messages])
 
@@ -115,7 +115,6 @@ function RichTextBlogGenerator() {
     // }
     try {
       const value = deserializeMd(editor, content)
-      console.log('value', value);
       if (value[value.length - 1].length == 0) {
         value[value.length - 1] = [{
           type: 'p',
@@ -136,7 +135,6 @@ function RichTextBlogGenerator() {
       return value
       // return value
     } catch (e) {
-      console.log('e', e);
       return [{
         type: 'p',
         children: [{
@@ -145,8 +143,6 @@ function RichTextBlogGenerator() {
       }]
     }
   }
-
-  console.log('currentValidValue', messages, currentValidValue);
 
   return (
     <div className="flex 
@@ -183,8 +179,10 @@ function RichTextBlogGenerator() {
           <Button
             className="mb-4"
             type="submit"
+            disabled={isLoading}
           >
             Create Blog Post
+            {isLoading && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
           </Button>
         </form>
 
@@ -207,7 +205,6 @@ function RichTextBlogGenerator() {
                         plugins={plugins}
                         onChange={(newValue) => {
                           setDebugValue(newValue);
-                          console.log(debugValue)
                           // save newValue...
                         }}
                       >
@@ -223,7 +220,7 @@ function RichTextBlogGenerator() {
                       </Plate>
                       <form onSubmit={handleSubmit} className="mt-4">
                         <label>
-                          Ask KAME
+                          Ask SENEC
                         </label>
                         <Input
                           placeholder="Chat with AI here..."
