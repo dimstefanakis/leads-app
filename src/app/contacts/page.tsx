@@ -48,6 +48,7 @@ import { useUser } from "@/lib/useUser"
 import { useToast } from "@/components/ui/use-toast"
 import { v4 as uuidv4 } from 'uuid';
 import WorkspaceSelector from "@/components/workspaceSelector"
+import Navbar from "@/components/navbar"
 import type { Database } from "../../../types_db"
 import useWorkspaceStore from "@/store/useWorkspaceStore"
 import useContactPopoverStore from "@/store/useContactPopoverStore"
@@ -320,10 +321,11 @@ export default function DataTable() {
   }
 
   return (
-    currentWorkspace &&
-    <div className="w-full p-4">
-      <div className="flex items-center py-4">
-        {/* <Input
+    <><Navbar />
+      {currentWorkspace &&
+        <div className="w-full p-4">
+          <div className="flex items-center py-4">
+            {/* <Input
           placeholder="Filter emails..."
           value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
@@ -331,102 +333,102 @@ export default function DataTable() {
           }
           className="max-w-sm"
         /> */}
-        <WorkspaceSelector />
-        <SetupPopover />
-        {/* <Button className="ml-3"
+            <WorkspaceSelector />
+            <SetupPopover />
+            {/* <Button className="ml-3"
           onClick={() => fileRef.current?.click()}
         >
           Setup
         </Button> */}
-        <Button className="ml-3"
-          variant="outline"
-          onClick={() => fileRef.current?.click()}
-        >
-          {/* <Plus className="h-4 w-4" /> */}
-          Import contacts
-        </Button>
-        <input
-          type="file"
-          ref={fileRef}
-          className="hidden"
-          onChange={importContacts}
-          accept=".csv"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
+            <Button className="ml-3"
+              variant="outline"
+              onClick={() => fileRef.current?.click()}
+            >
+              {/* <Plus className="h-4 w-4" /> */}
+              Import contacts
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <Input
-        placeholder="Filter emails..."
-        value={globalFilter}
-        onChange={(event) =>
-          setGlobalFilter(event.target.value)
-        }
-        className="max-w-sm mb-4"
-      />
-      {/* <Dialog open={contactPopover.open} onOpenChange={contactPopover.setOpen}>
+            <input
+              type="file"
+              ref={fileRef}
+              className="hidden"
+              onChange={importContacts}
+              accept=".csv"
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="ml-auto">
+                  Columns <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    )
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <Input
+            placeholder="Filter emails..."
+            value={globalFilter}
+            onChange={(event) =>
+              setGlobalFilter(event.target.value)
+            }
+            className="max-w-sm mb-4"
+          />
+          {/* <Dialog open={contactPopover.open} onOpenChange={contactPopover.setOpen}>
         <ContactPopover contact={contactPopover.contact} />
       </Dialog> */}
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <>
-                  <TableRow
-                    key={row.id}
-                    onClick={() => {
-                      contactPopover.setContactId(row.id)
-                      contactPopover.setContact(row.original)
-                      contactPopover.setOpen(!contactPopover.open)
-                    }}
-                    className="cursor-pointer"
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}
-                        className="truncate
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                        </TableHead>
+                      )
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <>
+                      <TableRow
+                        key={row.id}
+                        onClick={() => {
+                          contactPopover.setContactId(row.id)
+                          contactPopover.setContact(row.original)
+                          contactPopover.setOpen(!contactPopover.open)
+                        }}
+                        className="cursor-pointer"
+                        data-state={row.getIsSelected() && "selected"}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}
+                            className="truncate
                       max-w-xs
                       sm:max-w-sm
                       md:max-w-md
@@ -434,58 +436,60 @@ export default function DataTable() {
                       xl:max-w-xl
                       2xl:max-w-2xl
                       "
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                      {contactPopover.contactId == row.id && (
+                        <Dialog open={contactPopover.open} onOpenChange={contactPopover.setOpen}>
+                          <ContactPopover contact={contactPopover.contact} />
+                        </Dialog>
+                      )}
+                    </>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
                   </TableRow>
-                  {contactPopover.contactId == row.id && (
-                    <Dialog open={contactPopover.open} onOpenChange={contactPopover.setOpen}>
-                      <ContactPopover contact={contactPopover.contact} />
-                    </Dialog>
-                  )}
-                </>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-    </div>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex-1 text-sm text-muted-foreground">
+              {table.getFilteredSelectedRowModel().rows.length} of{" "}
+              {table.getFilteredRowModel().rows.length} row(s) selected.
+            </div>
+            <div className="space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </div>}
+    </>
   )
+
 }

@@ -63,6 +63,26 @@ export interface Database {
           user_id?: string | null
         }
       }
+      chat_requests: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string | null
+          user_id?: string | null
+        }
+      }
       contacts: {
         Row: {
           columns: string[] | null
@@ -81,6 +101,20 @@ export interface Database {
           created_at?: string | null
           data?: Json | null
           id?: string
+        }
+      }
+      customers: {
+        Row: {
+          id: string
+          stripe_customer_id: string | null
+        }
+        Insert: {
+          id: string
+          stripe_customer_id?: string | null
+        }
+        Update: {
+          id?: string
+          stripe_customer_id?: string | null
         }
       }
       prices: {
@@ -247,18 +281,21 @@ export interface Database {
           contacts: Json[] | null
           created_at: string | null
           id: string
+          user_id: string | null
         }
         Insert: {
           columns?: string[] | null
           contacts?: Json[] | null
           created_at?: string | null
           id?: string
+          user_id?: string | null
         }
         Update: {
           columns?: string[] | null
           contacts?: Json[] | null
           created_at?: string | null
           id?: string
+          user_id?: string | null
         }
       }
     }

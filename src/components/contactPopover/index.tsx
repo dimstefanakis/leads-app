@@ -82,7 +82,7 @@ function ContactPopover({ contact }: { contact: Contact }) {
       <DialogHeader>
         <DialogTitle>Generate email</DialogTitle>
         <DialogDescription>
-          Make sure to click &quot;setup&quot; before generating emails. This will help Kamemail generate better emails for you.
+          Make sure to click &quot;setup&quot; before generating emails. This will help SENEC generate better emails for you.
         </DialogDescription>
       </DialogHeader>
       <div className="grid grid-cols-1 gap-4 py-4">
@@ -120,7 +120,7 @@ function ContactPopover({ contact }: { contact: Contact }) {
             >Generate</Button>
           ) : <form onSubmit={handleSubmit} className="mt-4">
             <label>
-              Ask KAME
+              Ask SENEC
               <Textarea value={input} onChange={handleInputChange} className="min-h-[50px]" />
             </label>
             <Button className="mt-2" type="submit">Ask</Button>

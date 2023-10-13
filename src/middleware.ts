@@ -15,8 +15,13 @@ export async function middleware(req: NextRequest) {
   // if (user && req.nextUrl.pathname === '/') {
   //   return NextResponse.redirect(new URL('/contacts', req.url))
   // }
-  if (user && req.nextUrl.pathname != '/contacts') {
-    return NextResponse.redirect(new URL('/contacts', req.url))
+
+  if (req.nextUrl.pathname == '/johnny') {
+    return NextResponse.redirect(new URL('/tweet', req.url))
+  }
+
+  if (!user && ['/contacts', '/tweet', '/blog', '/email'].includes(req.nextUrl.pathname)) {
+    return NextResponse.redirect(new URL('/signin', req.url))
   }
 
   // if user is not signed in and the current path is not / redirect the user to /
@@ -35,5 +40,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/account', '/signin', '/contacts'],
+  matcher: ['/', '/account', '/signin', '/contacts', '/johnny', '/tweet', '/blog'],
 }
