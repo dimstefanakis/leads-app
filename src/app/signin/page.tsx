@@ -41,6 +41,7 @@ function SignIn() {
   const { user } = useUser();
 
   function onSubmit(values: any) {
+    form.clearErrors();
     if (view == 'sign_in') {
       handleLogin();
     } else {
@@ -65,7 +66,7 @@ function SignIn() {
     )
     const data = await response.json()
     if (data.error) {
-      form.setError('invalid_credentials', { message: data.error });
+      form.setError('invalid_credentials', { message: data.error.message });
       setLoading(false);
     } else {
       handleLogin();
@@ -145,7 +146,15 @@ function SignIn() {
                 </div>
               </div> */}
               <div className="w-full">
-                <Button type="submit" className="w-full" disabled={loading}>
+                <p className="text-red-600 mb-3">
+                  {/* @ts-ignore */}
+                  {form.formState.errors.invalid_credentials?.message}
+                </p>
+
+                <Button className="w-full" disabled={loading} onClick={() => {
+                  form.clearErrors();
+                  form.handleSubmit(onSubmit)
+                }}>
                   {view === 'sign_in' ? 'Sign in' : 'Sign up'}
                   {loading && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
                 </Button>
