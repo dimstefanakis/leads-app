@@ -37,7 +37,7 @@ function Pricing() {
       router.push('/signin');
       return;
     }
-    console.log('premiumPrice', products, premiumPlan, premiumPrice);
+
     if (premiumPrice) {
       setLoading(true);
       const response = await fetch(

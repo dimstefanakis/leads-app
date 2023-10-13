@@ -5,7 +5,7 @@ import { ArrowRightIcon, TwitterIcon, MailIcon, MailsIcon, TextIcon, DollarSign 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardTitle, CardFooter, CardDescription, CardHeader } from '@/components/ui/card';
-import { NavBar } from '@/components/navbar'
+import NavBar from '@/components/navbar'
 import Pricing from '@/components/pricing';
 import { Inter } from 'next/font/google'
 import { useUser } from '@/lib/useUser';
@@ -20,26 +20,8 @@ export default function Home() {
     <main>
       <div className="w-full flex justify-center">
         <div className="flex flex-col w-full items-center">
-          <div className="w-full flex justify-between absolute top-0 left-0 p-4 h-20">
-            <Button variant="ghost"
-              onClick={() => {
-                router.push('/')
-              }}
-            >SENEC</Button>
-            <Button size="sm"
-              onClick={() => {
-                if (user) {
-                  router.push('/dashboard')
-                } else {
-                  router.push('/signin')
-                }
-              }}
-            >
-              {user ? 'Dashboard' : 'Sign in'}
-            </Button>
-          </div>
-
-          <div className="max-w-screen-xl text-center mt-36 sm:mt-48">
+          <NavBar />
+          <div className="max-w-screen-xl text-center mt-12 sm:mt-20">
             <Badge variant="secondary" className="rounded-lg mb-6 cursor-pointer"
               onClick={() => {
                 // mail

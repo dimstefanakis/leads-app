@@ -20,6 +20,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'You need to be signed in' })
   }
 
+  // @ts-ignore
+  const requestCount = await supabase.rpc('get_monthly_chat_request_count', {
+    p_user_id: user.id,
+  })
+
+  if (requestCount.error) {
+    return NextResponse.json({ error: 'An error has occured' }), { status: 500 }
+  }
+
   const subscriptionResponse = await supabase
     .from('subscriptions')
     .select('*, prices(*, products(*))')
@@ -27,12 +36,15 @@ export async function POST(req: Request) {
     // .in('status', ['trialing', 'active'])
     .single();
 
-
   //@ts-ignore
   const hasProPlan = subscriptionResponse.data?.prices?.products?.metadata?.type === 'premium'
 
+  if (hasProPlan && requestCount.data > 400 || !hasProPlan && requestCount.data > 40) {
+    return NextResponse.json({ error: 'You have reached your monthly chat request limit' }), { status: 500 }
+  }
+
   // log chat request
-  const chatRequestResponse = await supabase.from('chat_requests').insert({
+  await supabase.from('chat_requests').insert({
     user_id: user.id,
   }).select('*')
 
