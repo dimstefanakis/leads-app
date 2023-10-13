@@ -19,21 +19,27 @@ export async function POST(request: Request) {
   const { email, password } = await request.json()
   // const supabase = createRouteHandlerClient<Database>({ cookies })
 
-  let response = await supabaseAdmin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true
-  })
+  try {
+    let response = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true
+    })
 
-  if (response.error) {
-    return NextResponse.redirect('/auth/sign-up?error=signup')
+    if (response.error) {
+      return NextResponse.json({ error: response.error }, { status: 500 })
+    }
+
+    await supabase.from('workspaces').insert({
+      contacts: [],
+      columns: [],
+      user_id: response.data.user.id,
+    }).select('*')
+
+    return NextResponse.json(response.data)
+
+  } catch (err) {
+    console.log(err)
+    return NextResponse.redirect('/auth/sign-up', { status: 500 })
   }
-
-  await supabase.from('workspaces').insert({
-    contacts: [],
-    columns: [],
-    user_id: response.data.user.id,
-  }).select('*')
-
-  return NextResponse.json(response.data)
 }

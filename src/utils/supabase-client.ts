@@ -19,7 +19,7 @@ export const getActiveProductsWithPrices = async (): Promise<
   // .order('unit_amount', { foreignTable: 'prices' });
 
   if (error) {
-    console.log(error.message, error.hint);
+    // console.log(error.message, error.hint);
   }
   // TODO: improve the typing here.
   return (data as any) || [];
