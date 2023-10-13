@@ -8,13 +8,6 @@ import { NextResponse } from "next/server";
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
 
-// Stripe requires the raw body to construct the event.
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};
-
 export const dynamic = 'force-dynamic'
 
 const relevantEvents = new Set([

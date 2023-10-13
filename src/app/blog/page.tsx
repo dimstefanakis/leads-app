@@ -33,6 +33,7 @@ import { createHeadingPlugin } from '@udecode/plate-heading';
 import { createParagraphPlugin } from '@udecode/plate-paragraph';
 import { createListPlugin } from "@udecode/plate-list";
 import { createPlateUI } from "@/lib/create-plate-ui";
+import Navbar from "@/components/navbar";
 
 
 const plugins = createPlugins(
@@ -145,108 +146,110 @@ function RichTextBlogGenerator() {
   }
 
   return (
-    <div className="flex 
+    <>
+      <Navbar />
+      <div className="flex 
       flex-col
       items-center
       justify-center
       w-full">
-      <div
-        className="
+        <div
+          className="
         w-full
         mt-12
         max-w-screen-lg
         md:max-w-screen-sm
         "
-      >
-        <form onSubmit={handleSubmit}>
-          <label>
-            Some words about what you want to write about
-          </label>
-          <Textarea
-            className="w-full mb-4 mt-4"
-            value={input}
-            onChange={handleInputChange}
-            rows={10}
-            placeholder={
-              `Write a short sentence about what you want to write about. You can also include a list of key points, for example:
+        >
+          <form onSubmit={handleSubmit}>
+            <label>
+              Some words about what you want to write about
+            </label>
+            <Textarea
+              className="w-full mb-4 mt-4"
+              value={input}
+              onChange={handleInputChange}
+              rows={10}
+              placeholder={
+                `Write a short sentence about what you want to write about. You can also include a list of key points, for example:
 - ChatGPT is a chatbot that knows everything
 - It's the faster growing platform in the world
 - It's now one of the most popular chatbots in the world
             `
-            }
-          >
-          </Textarea>
-          <Button
-            className="mb-4"
-            type="submit"
-            disabled={isLoading}
-          >
-            Create Blog Post
-            {isLoading && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
-          </Button>
-        </form>
+              }
+            >
+            </Textarea>
+            <Button
+              className="mb-4"
+              type="submit"
+              disabled={isLoading}
+            >
+              Create Blog Post
+              {isLoading && <Loader2 className="w-4 h-4 ml-2 animate-spin" />}
+            </Button>
+          </form>
 
-        {messages.filter(m => m.role != 'system').length > 0 && (
-          <>
-            {messages.filter(m => m.role != 'system').map((m, i) => {
-              return (
-                <>
-                  {m.role == 'assistant' ? (
-                    <>
-                      <Plate
-                        key={finishedLoadingMessages.includes(m.id) ? m.id : key}
-                        initialValue={
-                          getContent(m.content)
-                        }
-                        value={
-                          getContent(m.content)
-                        }
-                        // normalizeInitialValue
-                        plugins={plugins}
-                        onChange={(newValue) => {
-                          setDebugValue(newValue);
-                          // save newValue...
-                        }}
-                      >
-                        <Editor
-                          placeholder="Click generate to generate a blog post"
-                        />
-                        {/* <Accordion type="single" collapsible>
+          {messages.filter(m => m.role != 'system').length > 0 && (
+            <>
+              {messages.filter(m => m.role != 'system').map((m, i) => {
+                return (
+                  <>
+                    {m.role == 'assistant' ? (
+                      <>
+                        <Plate
+                          key={finishedLoadingMessages.includes(m.id) ? m.id : key}
+                          initialValue={
+                            getContent(m.content)
+                          }
+                          value={
+                            getContent(m.content)
+                          }
+                          // normalizeInitialValue
+                          plugins={plugins}
+                          onChange={(newValue) => {
+                            setDebugValue(newValue);
+                            // save newValue...
+                          }}
+                        >
+                          <Editor
+                            placeholder="Click generate to generate a blog post"
+                          />
+                          {/* <Accordion type="single" collapsible>
                           <AccordionItem value="manual-installation">
                             <AccordionTrigger>Debug Value</AccordionTrigger>
                             <AccordionContent>{JSON.stringify(debugValue)}</AccordionContent>
                           </AccordionItem>
                         </Accordion> */}
-                      </Plate>
-                      <form onSubmit={handleSubmit} className="mt-4">
-                        <label>
-                          Ask SENEC
-                        </label>
-                        <Input
-                          placeholder="Chat with AI here..."
-                          value={input}
-                          onChange={handleInputChange}
-                          className="my-4"
-                        />
-                        <Button type="submit">Ask</Button>
-                      </form>
+                        </Plate>
+                        <form onSubmit={handleSubmit} className="mt-4">
+                          <label>
+                            Ask SENEC
+                          </label>
+                          <Input
+                            placeholder="Chat with AI here..."
+                            value={input}
+                            onChange={handleInputChange}
+                            className="my-4"
+                          />
+                          <Button type="submit">Ask</Button>
+                        </form>
 
-                    </>
-                  ) : m.role == 'user' ? (
-                    // <Textarea value={m.content} placeholder="" className="min-h-[50px]" />
-                    <div key={m.id} className={`mt-${i == 0 ? '0' : '4'} bg-slate-${m.role == 'user' ? '200' : '100'} p-3 bg-secondary rounded text-sm whitespace-break-spaces`}>
-                      {m.content}
-                    </div>
-                  ) : null}
-                  {i != messages.filter(m => m.role != 'system').length - 1 && <Separator className="mt-3" />}
-                </>
-              )
-            })}
-          </>
-        )}
+                      </>
+                    ) : m.role == 'user' ? (
+                      // <Textarea value={m.content} placeholder="" className="min-h-[50px]" />
+                      <div key={m.id} className={`mt-${i == 0 ? '0' : '4'} bg-slate-${m.role == 'user' ? '200' : '100'} p-3 bg-secondary rounded text-sm whitespace-break-spaces`}>
+                        {m.content}
+                      </div>
+                    ) : null}
+                    {i != messages.filter(m => m.role != 'system').length - 1 && <Separator className="mt-3" />}
+                  </>
+                )
+              })}
+            </>
+          )}
+        </div>
       </div>
-    </div>
-
+    </>
   )
 }
 
