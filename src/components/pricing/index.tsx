@@ -67,10 +67,10 @@ function Pricing() {
           What's included
         </h3>
         <ul className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
-          <li className="flex items-center">
+          {/* <li className="flex items-center">
             <CheckIcon className="mr-2" />
             <span>Access to up to 10 AI tools of your choice</span>
-          </li>
+          </li> */}
           <li className="flex items-center">
             <CheckIcon className="mr-2" />
             <span>Access to GPT-4</span>
