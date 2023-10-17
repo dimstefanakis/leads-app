@@ -69,7 +69,7 @@ function Dashboard() {
           <h1 className="text-3xl font-bold mb-6 mt-10">Dashboard</h1>
           <h1 className="text-xl font-semibold">Monthly requests</h1>
           <p>
-            {requestCount} / {hasProPlan ? '400' : '400'}
+            {requestCount} / {hasProPlan ? '400' : '40'}
           </p>
           <span className="text-sm text-gray-500">
             Your request limit resets on the 1st of every month.
