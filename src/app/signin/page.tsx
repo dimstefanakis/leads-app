@@ -33,7 +33,7 @@ type Views = typeof views[number];
 function SignIn() {
   const router = useRouter();
   const form = useForm()
-  const [view, setView] = useState<Views>('sign_in');
+  const [view, setView] = useState<Views>('sign_up');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
