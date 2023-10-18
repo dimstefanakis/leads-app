@@ -1,5 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/react';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { Inter } from 'next/font/google'
@@ -29,6 +30,7 @@ export default async function RootLayout({
         <AuthProvider session={session}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             {children}
+            <Analytics />
             <Toaster />
           </ThemeProvider>
         </AuthProvider>
