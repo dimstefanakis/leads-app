@@ -14,6 +14,7 @@ export const runtime = 'edge'
 
 export async function POST(req: Request) {
   try {
+    console.log('in')
     const { messages } = await req.json()
     const supabase = createRouteHandlerClient<Database>({ cookies })
     const { data: { user } } = await supabase.auth.getUser()
@@ -30,26 +31,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'An error has occured' }), { status: 500 }
     }
 
-    // const subscriptionResponse = await supabase
-    //   .from('subscriptions')
-    //   .select('*, prices(*, products(*))')
-    //   .eq('user_id', user?.id)
-    //   // .in('status', ['trialing', 'active'])
-    //   .single();
+    const subscriptionResponse = await supabase
+      .from('subscriptions')
+      .select('*, prices(*, products(*))')
+      .eq('user_id', user?.id)
+      // .in('status', ['trialing', 'active'])
+      .single();
 
     //@ts-ignore
-    // const hasProPlan = subscriptionResponse.data?.prices?.products?.metadata?.type === 'premium'
+    const hasProPlan = subscriptionResponse.data?.prices?.products?.metadata?.type === 'premium'
 
-    // if (hasProPlan && requestCount.data > 400 || !hasProPlan && requestCount.data > 40) {
-    //   return NextResponse.json({ error: 'You have reached your monthly chat request limit' }), { status: 500 }
-    // }
+    if (hasProPlan && requestCount.data > 400 || !hasProPlan && requestCount.data > 40) {
+      return NextResponse.json({ error: 'You have reached your monthly chat request limit' }), { status: 500 }
+    }
 
     // log chat request
     await supabase.from('chat_requests').insert({
       user_id: user.id,
     }).select('*')
 
-    const hasProPlan = true
     const response = await openai.chat.completions.create({
       model: hasProPlan ? 'gpt-4' : 'gpt-3.5-turbo',
       // model: 'gpt-4',
