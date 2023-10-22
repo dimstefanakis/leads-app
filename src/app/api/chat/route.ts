@@ -24,14 +24,17 @@ export async function POST(req: Request) {
     console.log('in2')
 
     // @ts-ignore
-    let requestCount = await supabase.rpc('get_monthly_chat_request_count', {
+    let requestCount = 0;
+    const requestCountResponse = await supabase.rpc('get_monthly_chat_request_count', {
       p_user_id: user.id,
     })
     console.log('in3')
 
-    if (requestCount.error) {
-      
+    if (requestCountResponse.error) {
+      console.log(requestCountResponse.error)
       // return NextResponse.json({ error: 'An error has occured' }), { status: 500 }
+    }else{
+      requestCount = requestCountResponse.data
     }
     console.log('in4')
 
@@ -47,7 +50,7 @@ export async function POST(req: Request) {
     const hasProPlan = subscriptionResponse.data?.prices?.products?.metadata?.type === 'premium'
     console.log('in6')
 
-    if (hasProPlan && requestCount.data > 400 || !hasProPlan && requestCount.data > 40) {
+    if (hasProPlan && requestCount > 400 || !hasProPlan && requestCount > 40) {
       return NextResponse.json({ error: 'You have reached your monthly chat request limit' }), { status: 500 }
     }
     console.log('in7')
