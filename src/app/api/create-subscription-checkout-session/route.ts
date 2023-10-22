@@ -37,7 +37,7 @@ export async function POST(req: any) {
       subscription_data: {
         metadata
       },
-      success_url: `${getURL()}/builder?plan=${price.id}`,
+      success_url: `${getURL()}/`,
       cancel_url: `${getURL()}/`
     });
 
