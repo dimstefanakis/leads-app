@@ -16,6 +16,14 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: 'Senec AI - All your AI tools under a single subscription.',
   description: 'Writing emails, tweeting, writing blog posts, and more. All under a single subscription.',
+  openGraph: {
+    title: 'Senec AI - All your AI tools under a single subscription.',
+    description: 'Writing emails, tweeting, writing blog posts, and more. All under a single subscription.',
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://senec.ai',
+    siteName: 'Senec AI',
+  },
 }
 
 export default async function RootLayout({
