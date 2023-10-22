@@ -23,8 +23,8 @@ export async function POST(req: Request) {
     }
     console.log('in2')
 
-    // @ts-ignore
     let requestCount = 0;
+    // @ts-ignore
     const requestCountResponse = await supabase.rpc('get_monthly_chat_request_count', {
       p_user_id: user.id,
     })
