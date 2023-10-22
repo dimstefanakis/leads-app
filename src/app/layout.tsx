@@ -13,6 +13,11 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const dynamic = "force-dynamic";
 
+export const metadata: Metadata = {
+  title: 'Senec AI - All your AI tools under a single subscription.',
+  description: 'Writing emails, tweeting, writing blog posts, and more. All under a single subscription.',
+}
+
 export default async function RootLayout({
   children,
 }: {
@@ -26,6 +31,16 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <meta property="og:image" content="<generated>" />
+        <meta property="og:image:type" content="<generated>" />
+        <meta property="og:image:width" content="<generated>" />
+        <meta property="og:image:height" content="<generated>" />
+        <meta name="twitter:image" content="<generated>" />
+        <meta name="twitter:image:type" content="<generated>" />
+        <meta name="twitter:image:width" content="<generated>" />
+        <meta name="twitter:image:height" content="<generated>" />
+      </head>
       <body className={inter.className}>
         <AuthProvider session={session}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
