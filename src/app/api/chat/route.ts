@@ -38,12 +38,13 @@ export async function POST(req: Request) {
       .single();
 
     //@ts-ignore
-    const hasProPlan = subscriptionResponse.data?.prices?.products?.metadata?.type === 'premium'
+    // const hasProPlan = subscriptionResponse.data?.prices?.products?.metadata?.type === 'premium'
 
-    if (hasProPlan && requestCount.data > 400 || !hasProPlan && requestCount.data > 40) {
-      return NextResponse.json({ error: 'You have reached your monthly chat request limit' }), { status: 500 }
-    }
+    // if (hasProPlan && requestCount.data > 400 || !hasProPlan && requestCount.data > 40) {
+    //   return NextResponse.json({ error: 'You have reached your monthly chat request limit' }), { status: 500 }
+    // }
 
+    const hasProPlan = true
     // log chat request
     await supabase.from('chat_requests').insert({
       user_id: user.id,
