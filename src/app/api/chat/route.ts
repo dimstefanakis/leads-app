@@ -24,13 +24,14 @@ export async function POST(req: Request) {
     console.log('in2')
 
     // @ts-ignore
-    const requestCount = await supabase.rpc('get_monthly_chat_request_count', {
+    let requestCount = await supabase.rpc('get_monthly_chat_request_count', {
       p_user_id: user.id,
     })
     console.log('in3')
 
     if (requestCount.error) {
-      return NextResponse.json({ error: 'An error has occured' }), { status: 500 }
+      
+      // return NextResponse.json({ error: 'An error has occured' }), { status: 500 }
     }
     console.log('in4')
 
