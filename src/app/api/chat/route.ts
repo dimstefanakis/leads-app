@@ -5,6 +5,7 @@ import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { Database } from '../../../../types_db'
+import { RequestCookies } from "@edge-runtime/cookies";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -15,7 +16,8 @@ export const runtime = 'edge'
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json()
-    const supabase = createRouteHandlerClient<Database>({ cookies })
+    const cookies = new RequestCookies(req.headers) as any;
+    const supabase = createRouteHandlerClient<Database>({ cookies: () => cookies })
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'You need to be signed in' })
