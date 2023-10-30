@@ -30,16 +30,22 @@ export default function Home() {
             >
               Need a personal AI tool? Apply here <ArrowRightIcon className="ml-1" size={16} />
             </Badge>
-            <h1 className="leading-tight sm:leading-none font-extrabold text-7xl tracking-tighter">
+            <h1 className="leading-tight sm:leading-none font-extrabold text-5xl md:text-7xl tracking-tighter">
               All your AI tools<br />Under a single subscription.
             </h1>
           </div>
           <h3 className="text-xl text-center max-w-xl my-8 text-muted-foreground">
             Writing emails, tweeting, writing blog posts, and more. All under a single subscription.
           </h3>
+          {!user && (
+            <Button size="lg" onClick={() => {
+              router.push('/signin')
+            }}
+            >Get started</Button>
+          )}
           <div className="flex max-w-7xl justify-center items-center w-full">
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-20">
-              <Card className="w-[380px]">
+              <Card className="w-[380px] max-w-full">
                 <CardHeader>
                   <CardTitle className="flex">
                     <TwitterIcon className="mr-2" />
@@ -64,7 +70,7 @@ export default function Home() {
                   </Button>
                 </CardFooter>
               </Card>
-              <Card className="w-[380px]">
+              <Card className="w-[380px] max-w-full">
                 <CardHeader>
                   <CardTitle className="flex">
                     <MailIcon className="mr-2" />
@@ -89,7 +95,7 @@ export default function Home() {
                   </Button>
                 </CardFooter>
               </Card>
-              <Card className="w-[380px]">
+              <Card className="w-[380px] max-w-full">
                 <CardHeader>
                   <CardTitle className="flex">
                     <MailsIcon className="mr-2" />
@@ -115,7 +121,7 @@ export default function Home() {
                   </Button>
                 </CardFooter>
               </Card>
-              <Card className="w-[380px]">
+              <Card className="w-[380px] max-w-full">
                 <CardHeader>
                   <CardTitle className="flex">
                     <TextIcon className="mr-2" />
@@ -139,7 +145,7 @@ export default function Home() {
                   </Button>
                 </CardFooter>
               </Card>
-              <Card className="w-[380px]">
+              <Card className="w-[380px] max-w-full">
                 <CardHeader>
                   <CardTitle className="flex">
                     <DollarSign className="mr-2" />
