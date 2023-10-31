@@ -22,13 +22,17 @@ export default function Home() {
         <div className="flex flex-col w-full items-center">
           <NavBar />
           <div className="max-w-screen-xl text-center mt-12 sm:mt-20">
-            <Badge variant="secondary" className="rounded-lg mb-6 cursor-pointer"
+            {/* <Badge variant="secondary" className="rounded-lg mb-6 cursor-pointer"
               onClick={() => {
                 // mail
                 window.open('mailto:jim@senec.ai?subject=Senec AI Application&body=Hi Jim, I would like to apply for a personal AI tool.')
               }}
             >
               Need a personal AI tool? Apply here <ArrowRightIcon className="ml-1" size={16} />
+            </Badge> */}
+            <Badge variant="secondary" className="rounded-lg mb-6 cursor-pointer"
+            >
+              Use code EARLYBIRD for 50% off 🎉
             </Badge>
             <h1 className="leading-tight sm:leading-none font-extrabold text-5xl md:text-7xl tracking-tighter">
               All your AI tools<br />Under a single subscription.
