@@ -41,12 +41,18 @@ export default function Home() {
           <h3 className="text-xl text-center max-w-xl my-8 text-muted-foreground">
             Writing emails, tweeting, writing blog posts, and more. All under a single subscription.
           </h3>
-          {!user && (
-            <Button size="lg" onClick={() => {
-              router.push('/signin')
+          <div>
+            {!user && (
+              <Button size="lg" className="mr-3" onClick={() => {
+                router.push('/signin')
+              }}
+              >Get started</Button>
+            )}
+            <Button size="lg" variant="outline" onClick={() => {
+              window.open('https://forms.gle/adiSEvR6LiQfJ8Za9', '_blank')
             }}
-            >Get started</Button>
-          )}
+            >Need another tool?</Button>
+          </div>
           <div className="flex max-w-7xl justify-center items-center w-full">
             <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-20">
               <Card className="w-[380px] max-w-full">
