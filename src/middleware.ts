@@ -20,7 +20,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/tweet', req.url))
   }
 
-  if (!user && ['/contacts', '/tweet', '/blog', '/email'].includes(req.nextUrl.pathname)) {
+  console.log(req.nextUrl.pathname)
+  if (!user && ['/contacts', '/tweet', '/blog', '/email', '/canvas'].includes(req.nextUrl.pathname)) {
     return NextResponse.redirect(new URL('/signin', req.url))
   }
 
@@ -38,5 +39,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/account', '/signin', '/contacts', '/johnny', '/tweet', '/blog'],
+  matcher: ['/', '/account', '/signin', '/contacts', '/johnny', '/tweet', '/blog', '/email', '/canvas'],
 }
